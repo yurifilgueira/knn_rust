@@ -1,12 +1,16 @@
+use knn::knn::find_knn;
+use ndarray::Array1;
+
 mod knn;
-use crate::knn::knn::calculate_distance;
 
 fn main() {
 
-    let a = [3, 4, 4, 1, 4];
-    let b = [4, 3, 5, 1, 5];
+    let item = Array1::from_vec(vec![5.6, 2.8, 6.4, 2.2]);
 
-    let result = calculate_distance(&a, &b);
+    let results = find_knn(2, &item);
 
-    println!("{}", result);
+    for r in results {
+        println!("{}", r.unwrap());
+    }
+
 }
