@@ -13,7 +13,7 @@ pub mod knn {
         f64::sqrt(sum as f64)
     }
 
-    pub fn find_knn(k: i32, item: &Array1<f64>) -> Vec<Option<ndarray::prelude::ArrayBase<ndarray::OwnedRepr<f64>, ndarray::prelude::Dim<[usize; 1]>>>> {
+    pub fn find_knn(k: i32, item: &Array1<f64>) -> Vec<Option<Array1<f64>>> {
         
         let a = Array1::from_vec([5.1, 3.5, 1.4, 0.2].to_vec());
         let b = Array1::from_vec([5.0, 3.3, 1.4, 0.2].to_vec());
