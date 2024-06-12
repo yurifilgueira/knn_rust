@@ -1,16 +1,20 @@
-use knn::knn::find_knn;
-use ndarray::Array1;
+use std::error::Error;
 
-mod knn;
+use csv::ReaderBuilder;
 
-fn main() {
+fn main() -> Result<(), Box<dyn Error>> {
 
-    let item = Array1::from_vec(vec![5.6, 2.8, 6.4, 2.2]);
-
-    let results = find_knn(2, &item);
-
-    for r in results {
-        println!("{}", r.unwrap());
+    // Defining headers
+    // let headers = vec!["SepalLength", "SepalWidth", "PetalLength", "PetalWidth", "Class"];
+   
+    // Defining the reader
+    let mut reader = ReaderBuilder::new()
+        .from_path("iris.csv")?;
+     
+    for rec in reader.records() {
+        println!("{:?}", rec?);
     }
+
+    Ok(())
 
 }
