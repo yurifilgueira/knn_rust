@@ -1,6 +1,6 @@
 pub mod knn {
-    use core::panic;
-    use std::fs::File;
+    use core::{f64, panic};
+    use std::{collections::HashMap, fs::File};
 
     use csv::Reader;
     use ndarray::Array1;
@@ -15,10 +15,14 @@ pub mod knn {
         f64::sqrt(sum as f64)
     }
 
-    pub fn find_knn(_k: i32, _item: &Array1<f64>, csv_reader: &mut Reader<File>) -> Vec<Option<Array1<f64>>> {
+    pub fn find_knn(_k: i32, item: &Array1<f64>, csv_reader: &mut Reader<File>) -> Vec<Option<Array1<f64>>> {
     
         let mut idx = 0;
+        let mut all_info: HashMap<String, Vec<f64>> = HashMap::new();
+        let mut distances: Vec<f64> = Vec::new();
         for res in csv_reader.records() {
+
+            let mut info: Vec<f64> = Vec::new();
 
             idx += 1;
             println!("Line: {idx}");
@@ -60,6 +64,24 @@ pub mod knn {
             println!("petal_length: {}", petal_length);
             println!("petal_width: {}", petal_width);
             println!("class: {}", class);
+
+            info.push(sepal_length);
+            info.push(sepal_width);
+            info.push(petal_length);
+            info.push(petal_width);
+
+            let info = Array1::from_vec(info);
+            let distance = calculate_distance(item, &info);
+            
+            distances.push(distance);
+            
+            all_info.insert(class, distances.clone());
+        }
+
+        for (k, v) in all_info {
+            for value in v {
+                println!("{} -> {}", k, value);
+            }
         }
 
         /*
@@ -74,7 +96,7 @@ pub mod knn {
            .map(|key| distances.get(key as usize).map(|(_, data)| data.clone()))
            .collect();
 
-           knn */
+           */
 
         todo!();
     }
