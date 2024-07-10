@@ -1,8 +1,8 @@
 pub mod knn {
     use core::{f64, panic};
-    use std::{collections::HashMap, fs::File, usize};
+    use std::{collections::HashMap, fs::File, simd::LaneCount, usize};
 
-    use csv::Reader;
+    use csv::{Reader, StringRecordsIntoIter};
     use ndarray::Array1;
 
     pub fn calculate_distance(a: &Array1<f64>, b: &Array1<f64>) -> f64 {
@@ -15,12 +15,17 @@ pub mod knn {
         f64::sqrt(sum as f64)
     }
 
-    pub fn find_knn(k: usize, item: &Array1<f64>, csv_reader: &mut Reader<File>) {
+    pub fn find_knn(k: usize, item: &Array1<f64>, csv_reader: &mut Reader<File>) -> Vec<Option<Array1<f64>>> {
     
-        let mut distances: Vec<_> = Vec::new();
+        let mut idx = 0;
+        let mut all_info: HashMap<String, Vec<(f64, usize)>> = HashMap::new();
+        let mut distances: Vec<(f64, String>)> = Vec::new();
         for res in csv_reader.records() {
 
             let mut info: Vec<f64> = Vec::new();
+
+            idx += 1;
+            //println!("Line: {idx}");
 
             let r = res.unwrap();
 
@@ -73,7 +78,7 @@ pub mod knn {
 
         distances.sort_by(|a, b| a.partial_cmp(&b).unwrap());
 
-        let selected_distances: Vec<(f64, String)> = distances.iter().take(k).cloned().collect();
+        let selected_distances: Vec<(f64, &str)> = distances.iter().take(k).cloned().collect();
 
 
         let mut counter: HashMap<String, usize> = HashMap::new();
@@ -82,17 +87,28 @@ pub mod knn {
 
             let class = String::from(class);
 
-            if !counter.contains_key(&class) {
+            if !counter.contains_key(class) {
                 counter.insert(String::from(class), 1);
             }
             else {
-                counter.insert(class.clone(), *counter.get(&class.clone()).unwrap() + 1);
+                counter.insert(class.to_string(), *counter.get(class.unwrap()).unwrap());
             }
         }
 
-        
-        if let Some((max_key, max_value)) = counter.iter().max_by_key(|&(_, v)| v) {
-            println!("Chave com o maior valor: {}, Valor: {}", max_key, max_value);
-        }
+        /*
+           let mut distances: Vec<(f64, Array1<f64>)> = dataset
+           .iter()
+           .map(|data| (calculate_distance(item, data), data.clone()))
+           .collect();
+
+           distances.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
+
+           let knn: Vec<Option<Array1<f64>>> = (0..k)
+           .map(|key| distances.get(key as usize).map(|(_, data)| data.clone()))
+           .collect();
+
+           */
+
+        todo!();
     }
 }
